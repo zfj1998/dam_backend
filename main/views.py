@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import views, viewsets
 from rest_framework import permissions
-from main.serializers import UserSerializer, GroupSerializer
+from .serializers import UserSerializer, GroupSerializer, MsectionSerializer, \
+    MpointSerializer, MvalueSerializer
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+from .models import Msections, Mpoint, Mvalue
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -24,12 +27,29 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class FileUploadView(views.APIView):
-    parser_classes = [FileUploadParser]
+class MsectionViewSet(viewsets.ReadOnlyModelViewSet):
+    '''
+    Be able to query all the sections
+    '''
+    queryset = Msections.objects.all()
+    serializer_class = MsectionSerializer
 
-    def put(self, request, filename, format=None):
-        file_obj = request.data['file']
-        # ...
-        # do some stuff with uploaded file
-        # ...
-        return Response(status=204)
+
+class MpointViewSet(viewsets.ReadOnlyModelViewSet):
+    '''
+    Be able to query all the sections
+    '''
+    queryset = Mpoint.objects.all()
+    serializer_class = MpointSerializer
+    filterset_fields = ['section__name']
+    filter_backends = [DjangoFilterBackend]
+
+
+class MvalueViewSet(viewsets.ReadOnlyModelViewSet):
+    '''
+    Be able to query all the sections
+    '''
+    queryset = Mvalue.objects.all()
+    serializer_class = MvalueSerializer
+    filterset_fields = ['m_point__name']
+    filter_backends = [DjangoFilterBackend]
