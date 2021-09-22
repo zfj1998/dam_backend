@@ -3,6 +3,7 @@
 {% block content %}
     <div>
         <form action="." method="POST" enctype="multipart/form-data">
+            <div style="font-size: 2em">{{ message }}<div></br>
             {{ form.as_p }}
             {% csrf_token %}
             <button type="submit">Upload File</button>
