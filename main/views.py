@@ -1,30 +1,8 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import views, viewsets
-from rest_framework import permissions
-from .serializers import UserSerializer, GroupSerializer, MsectionSerializer, \
+from rest_framework import viewsets
+from .serializers import MsectionSerializer, \
     MpointSerializer, MvalueSerializer
-from rest_framework.parsers import FileUploadParser
-from rest_framework.response import Response
 from .models import Msections, Mpoint, Mvalue
 from django_filters.rest_framework import DjangoFilterBackend
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class MsectionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -51,5 +29,10 @@ class MvalueViewSet(viewsets.ReadOnlyModelViewSet):
     '''
     queryset = Mvalue.objects.all()
     serializer_class = MvalueSerializer
-    filterset_fields = ['m_point__name']
-    filter_backends = [DjangoFilterBackend]
+
+    def get_queryset(self):
+        points = self.request.GET.get('m_points', '')
+        if points:
+            points_values = points.split(',')
+            return Mvalue.objects.filter(m_point__name__in=points_values)
+        return Mvalue.objects.all()
