@@ -35,4 +35,4 @@ class MvalueViewSet(viewsets.ReadOnlyModelViewSet):
         if points:
             points_values = points.split(',')
             return Mvalue.objects.filter(m_point__name__in=points_values)
-        return Mvalue.objects.all()
+        return []
